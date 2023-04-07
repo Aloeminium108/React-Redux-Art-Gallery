@@ -1,36 +1,47 @@
 import './App.css';
-import { useDispatch, useSelector } from 'react-redux';
-import { incrementId, decrementId, reset } from './features/imageIdSlice';
+import { useDispatch, useSelector, connect } from 'react-redux';
+import { incrementId, decrementId, reset, setId, fetchData } from './features/imageSlice';
+import { useEffect } from 'react';
 
-function App() {
+const mapStateToProps = (state) => ({
+  imageId: state.image.id
+})
+
+function App(props) {
 
   const dispatch = useDispatch()
 
-  const data = useSelector((state) => state.imageId)
+  const image = useSelector((state) => state.image)
 
   const renderImg = () => {
-    if(data.apiData) {
-      return <img style={{'width': '100vw'}} src={data.apiData.primaryImage} alt={data.apiData.title} />
+    if(image.api) {
+      return <img style={{'width': '100vw'}} src={image.api.primaryImage} alt={image.api.title} />
     } else {
       return <p>image here</p>
     }
   }
 
+  useEffect(() => {
+    dispatch(fetchData())
+  }, [props.imageId, dispatch])
+
   return (
     <div className="App">
     <div>
-      <button>Thunk!</button>
+      <button onClick={() => dispatch(fetchData())}>Thunk!</button>
       <button onClick={() => dispatch(reset())}>Clear</button>
       <button onClick={() => dispatch(incrementId())}>Next</button>
       <button onClick={() => dispatch(decrementId())}>Back</button>
     </div>
-    <input value={ data.objectId } />
+    <input value={ image.id } onChange={(e) => {
+      dispatch(setId(Number(e.target.value)))
+    }}/>
     <div>
-      {data.objectId}
+      {image.id}
       {renderImg()}
     </div>
   </div>
   );
 }
 
-export default App;
+export default connect(mapStateToProps)(App);

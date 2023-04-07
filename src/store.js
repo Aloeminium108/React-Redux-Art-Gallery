@@ -1,8 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { imageIdReducer } from './features/imageIdSlice'
+import { imageReducer } from './features/imageSlice'
+import { logger } from './features/middleware'
 
 export const store = configureStore({
     reducer: {
-      imageId: imageIdReducer
-    }
+      image: imageReducer
+    },
+    middleware: [ logger ]
 })
